@@ -4,15 +4,42 @@
     <meta charset="UTF-8">
     <title>Socket with Node</title>
 
+    <style>
+        #step-2 {
+            display: none;
+        }
+    </style>
+
     <!-- Latest compiled and minified CSS -->
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
           integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
 </head>
 <body style="padding: 20px;">
 
-    <h1>Socket with Node</h1>
+<h1>Socket with Node</h1>
 
-    <form>
+<div id="step-1">
+    <header>
+        <h4>Please, add your nickname first :)</h4>
+    </header>
+
+    <form id="form-step-1">
+        <input type="text"
+               class="form-control"
+               id="nickname"
+               required
+               placeholder="Your nickname here">
+
+        <button class="btn"
+                style="margin: 10px 0"
+                type="submit">
+            Send
+        </button>
+    </form>
+</div>
+
+<div id="step-2">
+    <form id="form-step-2">
         <ul id="list"></ul>
 
         <footer>
@@ -26,32 +53,59 @@
             </button>
         </footer>
     </form>
+</div>
 
-    <script src="/socket.io/socket.io.js"></script>
-    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
-    <script>
-        // connecting w/ socket
-        var socket = io();
+<script src="/socket.io/socket.io.js"></script>
+<script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    // connecting w/ socket
+    var socket = io();
+    var user;
 
-        // on submit, send message
-        $('form').submit(function () {
-            socket.emit('chat message', $('#message').val());
+    // on submit, send message
+    $('#form-step-1').submit(function () {
+        var nickname = $('#nickname').val();
+        socket.emit('nickname', nickname);
+        user = nickname;
 
-            // reset input
-            $('#message').val('');
-            return false;
-        });
+        // reset input
+        $('#nickname').val('');
 
-        // Let's emmit our message to all users
-        socket.on('chat message', function (msg) {
-            $('#list').append($('<li>').text(msg));
-        });
+        $("#step-1").hide("fast");
+        $("#step-2").show("fast");
+        return false;
+    });
 
-        // Let's emmit our message to all users if
-        // a user is has disconnected
-        socket.on('disconnect', function (msg) {
-            $('#list').append($('<li>').text(msg));
-        });
-    </script>
+    // on submit, send message
+    $('#form-step-2').submit(function () {
+        var message = $('#message').val();
+        var data = {
+            "message": message,
+            "sender": user
+        };
+        socket.emit('chat message', data);
+
+        // reset input
+        $('#message').val('');
+        return false;
+    });
+
+    // Let's emmit our message to all users
+    socket.on('chat message', function (data) {
+        var obj = {
+            "message": data.message,
+            "user": data.sender
+        };
+        $('#list')
+                .append($('<li>')
+                .html(obj.user + " says:<br/>" + obj.message));
+    });
+
+    // Let's emmit our message to all users if
+    // a user is has disconnected
+    socket.on('disconnect', function (msg) {
+        $('#list').append($('<li>').text(msg));
+    });
+</script>
 </body>
 </html>
