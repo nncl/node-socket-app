@@ -46,6 +46,12 @@
         socket.on('chat message', function (msg) {
             $('#list').append($('<li>').text(msg));
         });
+
+        // Let's emmit our message to all users if
+        // a user is has disconnected
+        socket.on('disconnect', function (msg) {
+            $('#list').append($('<li>').text(msg));
+        });
     </script>
 </body>
 </html>
