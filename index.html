@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Socket with Node</title>
+
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
+          integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" crossorigin="anonymous">
+</head>
+<body style="padding: 20px;">
+
+    <h1>Socket with Node</h1>
+
+    <form>
+        <ul id="list"></ul>
+
+        <footer>
+            <input type="text"
+                   placeholder="Message"
+                   id="message"
+                   class="form-control">
+
+            <button class="btn" style="margin: 10px 0" type="submit">
+                Send
+            </button>
+        </footer>
+    </form>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="http://code.jquery.com/jquery-1.11.1.js"></script>
+    <script>
+        // connecting w/ socket
+        var socket = io();
+
+        // on submit, send message
+        $('form').submit(function () {
+            socket.emit('chat message', $('#message').val());
+
+            // reset input
+            $('#message').val('');
+            return false;
+        });
+
+        // Let's emmit our message to all users
+        socket.on('chat message', function (msg) {
+            $('#list').append($('<li>').text(msg));
+        });
+    </script>
+</body>
+</html>
