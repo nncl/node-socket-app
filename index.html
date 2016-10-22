@@ -39,6 +39,10 @@
 </div>
 
 <div id="step-2">
+    <blockquote>
+        <p id="typing"></p>
+    </blockquote>
+
     <form id="form-step-2">
         <ul id="list"></ul>
 
@@ -87,7 +91,18 @@
 
         // reset input
         $('#message').val('');
+        $("#typing").text('');
         return false;
+    });
+
+    // on message typing
+    $("#message").on("focus", ()=> {
+        socket.emit('typing', user + " is typing...");
+    });
+
+    // Let's emmit when a user is typing
+    socket.on('typing', function (typing_message) {
+        $("#typing").text(typing_message);
     });
 
     // Let's emmit our message to all users
@@ -98,7 +113,7 @@
         };
         $('#list')
                 .append($('<li>')
-                .html(obj.user + " says:<br/>" + obj.message));
+                        .html(obj.user + " says:<br/>" + obj.message));
     });
 
     // Let's emmit our message to all users if

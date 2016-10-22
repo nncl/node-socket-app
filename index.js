@@ -28,6 +28,11 @@ io.on('connection', function (socket) {
         io.emit('nickname', nick);
     });
 
+    socket.on('typing', (typing_message) => {
+        console.log('nickname: ' + typing_message);
+        io.emit('typing', typing_message);
+    });
+
     socket.on('disconnect', () => {
         console.log(nickname + ' has disconnected');
         io.emit('disconnect', nickname + " disconnected");
